@@ -3,10 +3,10 @@ import IdeasDisplayPanel from '../components/IdeasDisplayPanel';
 import styled from 'styled-components';
 
 // TODO Remove to config file.
-let ideasAPIBase = process.env.API_URL_IDEAS || 'http://localhost:8000/ideas/';
+let APIBase = process.env.API_URL_IDEAS || 'http://localhost:8000/ideas/';
 let allIdeas = 'all';
 let addBlankIdea = 'create';
-console.log(ideasAPIBase);
+console.log("APIBASE", APIBase);
 
 const Loading = styled.img`
   width: 100px;
