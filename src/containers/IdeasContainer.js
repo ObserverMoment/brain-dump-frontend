@@ -45,6 +45,7 @@ class IdeasContainer extends Component {
     this.displayIdeasArray = this.displayIdeasArray.bind(this);
     this.addBlankIdea = this.addBlankIdea.bind(this);
     this.deleteIdea = this.deleteIdea.bind(this);
+    this.updateIdea = this.updateIdea.bind(this);
     this.setEditableId = this.setEditableId.bind(this);
   }
 
@@ -109,6 +110,7 @@ class IdeasContainer extends Component {
 
   }
 
+  // Being called from IdeasDisplayPanel.js.
   addBlankIdea() {
     // Create a blank idea object data.
     let blankIdea = {
@@ -118,7 +120,6 @@ class IdeasContainer extends Component {
     }
     // Make a post request to the API to add a new empty idea to the database.
     // Once confirmed update the state to allow re-render
-
     fetch(APIBase + addBlankIdea, {
       method: 'post',
       headers: {
@@ -128,18 +129,45 @@ class IdeasContainer extends Component {
       body: JSON.stringify(blankIdea)
     }).then(res => res.json())
       .then(newBlankIdea => {
-        let updatedIdeasArray = [ ...this.state.ideasArray, newBlankIdea ];
-        this.setState({ ideasArray: updatedIdeasArray });
+        console.log(newBlankIdea);
+        // Use the data base as the single point of truth rather than trying to merge the newly updated idea into the previous state.
+        this.fetchAllIdeas();
       })
       .catch(err => console.log(err));
   }
 
+  // Being called from IdeaTile.js.
+  updateIdea(updateIdeaData) {
+    // TODO. Before doing any updating just compare the current
+    // Just to make it clear that state from IdeaTile is not guaranteed to be in the corret format.
+    let newIdeaData = { ...updateIdeaData };
+    fetch(APIBase + newIdeaData._id, {
+      method: 'PUT', // or 'PUT'
+      body: JSON.stringify(newIdeaData),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      })
+    })
+      .then(response => {
+        if (response.status === 200) {
+          // Use the data base as the single point of truth rather than trying to merge the newly updated idea into the previous state.
+          this.fetchAllIdeas();
+          // So as to come out of edit mode to notify user that update has taken place.
+          this.setEditableId(null);
+        }
+      }) // TODO. Display success message.
+      .catch(error => console.error('Error:', error));
+
+    }
+
+  // Being called from IdeaTile.js.
   deleteIdea(id) {
     fetch(APIBase + id, {method: 'delete'})
       .then(res => res.json())
       .then(deletedId => {
-        let updatedIdeasArray = this.state.ideasArray.filter(idea => idea._id !== deletedId);
-        this.setState({ ideasArray: updatedIdeasArray })
+        console.log(deletedId);
+        // Use the data base as the single point of truth rather than trying to merge the newly updated idea into the previous state.
+        this.fetchAllIdeas();
       })
       .catch(err => console.log(err));
   }
@@ -153,11 +181,13 @@ class IdeasContainer extends Component {
     return (
       <div>
         <h3>Ideas Display Panel</h3>
-        <div>
-          {this.createSortDropdown()}
-        </div>
-        <div>
-          <input type="text" placeholder="Text Search" value={this.state.textSerch} onChange={this.handleSearch}/>
+        <div style={{display: 'flex'}}>
+          <div style={{width: '350px', margin: '0, 20px'}}>
+            {this.createSortDropdown()}
+          </div>
+          <div style={{width: '350px', margin: '0, 20px'}}>
+            <input type="text" placeholder="Text Search" value={this.state.textSerch} onChange={this.handleSearch}/>
+          </div>
         </div>
         {isLoading
           ? <Loading src="/img/loading.svg" alt="Loading your ideas" />
@@ -168,6 +198,7 @@ class IdeasContainer extends Component {
                   ideasArray={this.displayIdeasArray()}
                   editingId={editingId}
                   setEditableId={this.setEditableId}
+                  updateIdea={this.updateIdea}
                 />
               : <span>Oops, there are no ideas..</span>
         }

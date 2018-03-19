@@ -14,7 +14,7 @@ const AddIdeaIcon = styled.img`
   }
 `
 
-export default ({ideasArray, addBlankIdea, deleteIdea, editingId, setEditableId}) => (
+export default ({ideasArray, addBlankIdea, deleteIdea, editingId, setEditableId, updateIdea}) => (
   <IdeasDisplayPanel>
     {
       ideasArray.map(idea => {
@@ -25,6 +25,7 @@ export default ({ideasArray, addBlankIdea, deleteIdea, editingId, setEditableId}
             key={idea._id} idea={idea}
             isEditing={isEditable}
             setEditableId={setEditableId}
+            updateIdea={updateIdea}
           />
         )
       })
