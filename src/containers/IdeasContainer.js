@@ -3,10 +3,15 @@ import IdeasDisplayPanel from '../components/IdeasDisplayPanel';
 import styled from 'styled-components';
 
 // TODO Remove to config file.
-let APIBase = process.env.API_URL_IDEAS || 'http://localhost:8000/ideas/';
+// To access heroku variables you need to set up the following from
+// https://github.com/mars/create-react-app-buildpack#user-content-environment-variables
+import runtimeEnv from '@mars/heroku-js-runtime-env';
+const env = runtimeEnv();
+
+// Then you can access config vars using the REACT_APP_ prefix.
+let APIBase = env.REACT_APP_API_URL + 'ideas/' || 'http://localhost:8000/ideas/';
 let allIdeas = 'all';
 let addBlankIdea = 'create';
-console.log("APIBASE", APIBase);
 
 const Loading = styled.img`
   width: 100px;
