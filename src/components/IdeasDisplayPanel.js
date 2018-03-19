@@ -14,17 +14,21 @@ const AddIdeaIcon = styled.img`
   }
 `
 
-const renderTiles = (ideasArray, deleteIdea) => {
-  return ideasArray.map(idea => {
-    return (
-      <IdeaTile deleteIdea={deleteIdea} key={idea._id} idea={idea}/>
-    )
-  })
-}
-
-export default ({ideasArray, addBlankIdea, deleteIdea}) => (
+export default ({ideasArray, addBlankIdea, deleteIdea, editingId, setEditableId}) => (
   <IdeasDisplayPanel>
-    {renderTiles(ideasArray, deleteIdea)}
+    {
+      ideasArray.map(idea => {
+        let isEditable = editingId === idea._id;
+        return (
+          <IdeaTile
+            deleteIdea={deleteIdea}
+            key={idea._id} idea={idea}
+            isEditing={isEditable}
+            setEditableId={setEditableId}
+          />
+        )
+      })
+    }
     <AddIdeaIcon onClick={addBlankIdea} src="/img/plus.svg" alt="Add a new idea"/>
   </IdeasDisplayPanel>
 )

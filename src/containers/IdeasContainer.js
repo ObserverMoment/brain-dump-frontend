@@ -12,6 +12,7 @@ let addBlankIdea = 'create';
 
 class IdeasContainer extends Component {
   // IdeasBoard will manage the state that determines which ideas are displayed.
+  // TODO. Move sortOptions to a config file. Add props to constructor.
   constructor() {
     super();
     this.state = {
@@ -19,6 +20,7 @@ class IdeasContainer extends Component {
       textSearch: "",
       sortTitle: "Sort by...",
       sortValue: "",
+      editingId: null,
       sortOptions: [
         {
           name: 'Date',
@@ -43,6 +45,7 @@ class IdeasContainer extends Component {
     this.displayIdeasArray = this.displayIdeasArray.bind(this);
     this.addBlankIdea = this.addBlankIdea.bind(this);
     this.deleteIdea = this.deleteIdea.bind(this);
+    this.setEditableId = this.setEditableId.bind(this);
   }
 
   componentDidMount() {
@@ -141,8 +144,12 @@ class IdeasContainer extends Component {
       .catch(err => console.log(err));
   }
 
+  setEditableId(newEditableId) {
+    this.setState({ editingId: newEditableId });
+  }
+
   render() {
-    const { ideasArray, isLoading } = this.state;
+    const { ideasArray, isLoading, editingId } = this.state;
     return (
       <div>
         <h3>Ideas Display Panel</h3>
@@ -155,7 +162,13 @@ class IdeasContainer extends Component {
         {isLoading
           ? <Loading src="/img/loading.svg" alt="Loading your ideas" />
           : ideasArray
-              ? <IdeasDisplayPanel deleteIdea={this.deleteIdea} addBlankIdea={this.addBlankIdea} ideasArray={this.displayIdeasArray()} />
+              ? <IdeasDisplayPanel
+                  deleteIdea={this.deleteIdea}
+                  addBlankIdea={this.addBlankIdea}
+                  ideasArray={this.displayIdeasArray()}
+                  editingId={editingId}
+                  setEditableId={this.setEditableId}
+                />
               : <span>Oops, there are no ideas..</span>
         }
       </div>
