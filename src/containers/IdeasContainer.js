@@ -2,13 +2,15 @@ import React, { Component } from 'react';
 import IdeasDisplayPanel from '../components/IdeasDisplayPanel';
 import styled from 'styled-components';
 
+// TODO Remove to config file.
+let ideasAPIBase = process.env.API_URL_IDEAS || 'http://localhost:8000/ideas/';
+let allIdeas = 'all';
+let addBlankIdea = 'create';
+console.log(ideasAPIBase);
+
 const Loading = styled.img`
   width: 100px;
 `
-
-let APIBase = 'http://localhost:8000/ideas/'; // TODO Remove to config file.
-let allIdeas = 'all';
-let addBlankIdea = 'create';
 
 class IdeasContainer extends Component {
   // IdeasBoard will manage the state that determines which ideas are displayed.
