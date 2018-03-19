@@ -12,7 +12,6 @@ const env = runtimeEnv();
 let APIBase = env.REACT_APP_API_URL + 'ideas/' || 'http://localhost:8000/ideas/';
 let allIdeas = 'all';
 let addBlankIdea = 'create';
-console.log(APIBase);
 
 const Loading = styled.img`
   width: 100px;
