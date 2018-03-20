@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import IdeasDisplayPanel from '../components/IdeasDisplayPanel';
 import styled from 'styled-components';
+import { BasicButton } from '../customStyledComponents';
 
 // TODO Remove to config file.
 // To access heroku variables you need to set up the following from
@@ -9,12 +10,30 @@ import runtimeEnv from '@mars/heroku-js-runtime-env';
 const env = runtimeEnv();
 
 // Then you can access config vars using the REACT_APP_ prefix.
-let APIBase = env.REACT_APP_API_URL + 'ideas/' || 'http://localhost:8000/ideas/';
+// If it doesn't exist then we are in local build so just use localhost API.
+let APIBase = env.REACT_APP_API_URL ? env.REACT_APP_API_URL + 'ideas/' : 'http://localhost:8000/ideas/';
 let allIdeas = 'all';
 let addBlankIdea = 'create';
 
 const Loading = styled.img`
   width: 100px;
+`
+
+const IdeaTextSearch = styled.input`
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  display:block;
+  width:300px;
+  border:none;
+  border-bottom:1px solid #757575;
+`
+
+const SortButtons = styled(BasicButton)`
+  background-color: #ff8787;
+  color: #ecf0f1;
+  &:hover {
+    background-color: #de3f74;
+  }
 `
 
 class IdeasContainer extends Component {
@@ -72,17 +91,18 @@ class IdeasContainer extends Component {
     this.setState({ textSearch: e.target.value })
   }
 
-  handleSort(e) {
-    this.setState({ sortValue: e.target.value })
+  handleSort(sortValue) {
+    this.setState({ sortValue: sortValue })
   }
 
   createSortDropdown() {
     return (
-      <select key={this.sortTitle} onChange={this.handleSort}>
+      <div style={{display: 'flex', padding: '10px', margin: '-5px'}}>
+        <div style={{ padding: '10px'}}>Sort by:</div>
         {this.state.sortOptions.map(option => {
-            return <option key={option.name} value={option.value}>{option.name}</option>
+            return <SortButtons style={{ padding: '10px'}} key={option.name} onClick={() => this.handleSort(option.value)}>{option.name}</SortButtons>
         })}
-      </select>
+      </div>
     )
   }
 
@@ -137,7 +157,9 @@ class IdeasContainer extends Component {
     }).then(res => res.json())
       .then(newBlankIdea => {
         console.log(newBlankIdea);
-        // Use the data base as the single point of truth rather than trying to merge the newly updated idea into the previous state.
+        // Set state.editingID to that of the new id so that it is instantly editable.
+        this.setState({ editingId: newBlankIdea._id });
+        // Use the database as the single point of truth rather than trying to merge the newly updated idea into the previous state.
         this.fetchAllIdeas();
       })
       .catch(err => console.log(err));
@@ -187,13 +209,13 @@ class IdeasContainer extends Component {
     const { ideasArray, isLoading, editingId } = this.state;
     return (
       <div>
-        <h3>Ideas Display Panel</h3>
-        <div style={{display: 'flex'}}>
+        <h3 style={{padding: '10px', textAlign: 'left'}}>Right then...get your ideas saved here...</h3>
+        <div style={{display: 'flex', justifyContent: 'flex-start'}}>
           <div style={{width: '350px', margin: '0, 20px'}}>
             {this.createSortDropdown()}
           </div>
           <div style={{width: '350px', margin: '0, 20px'}}>
-            <input type="text" placeholder="Text Search" value={this.state.textSerch} onChange={this.handleSearch}/>
+            <IdeaTextSearch type="text" placeholder="Text Search" value={this.state.textSerch} onChange={this.handleSearch}/>
           </div>
         </div>
         {isLoading

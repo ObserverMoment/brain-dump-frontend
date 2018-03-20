@@ -1,14 +1,17 @@
 import React from 'react';
 import IdeaTile from './IdeaTile';
 import styled from 'styled-components';
+import { fadeIn } from '../animations';
 
 const IdeasDisplayPanel = styled.div`
+  animation: ${fadeIn} 1000ms;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
 `
 
 const AddIdeaIcon = styled.img`
-  width: 25px;
+  width: 40px;
   &:hover {
     cursor: pointer;
   }
