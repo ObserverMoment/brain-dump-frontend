@@ -21,11 +21,11 @@ export default ({ideasArray, addBlankIdea, deleteIdea, editingId, setEditableId,
   <IdeasDisplayPanel>
     {
       ideasArray.map(idea => {
-        let isEditable = editingId === idea._id;
+        let isEditable = editingId === idea.id;
         return (
           <IdeaTile
             deleteIdea={deleteIdea}
-            key={idea._id} idea={idea}
+            key={idea.id} idea={idea}
             isEditing={isEditable}
             setEditableId={setEditableId}
             updateIdea={updateIdea}

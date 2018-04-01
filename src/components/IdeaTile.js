@@ -73,9 +73,9 @@ class IdeaTile extends Component {
 
   // Use this lifecycle method rather than didMount so you can check updates from collaborators and only update if you need to
   componentDidMount() {
-    let { _id, title, body, author, created_at } = this.props.idea;
+    let { id, title, body, author, created_at } = this.props.idea;
     let isEditing = this.props.isEditing;
-    this.setState({ _id, title, body, author, created_at });
+    this.setState({ id, title, body, author, created_at });
     if (isEditing && this.nameInput) {
       this.nameInput.focus();
     };
@@ -101,7 +101,7 @@ class IdeaTile extends Component {
           !isEditing
             ? (
               <Tile
-                onClick={() => setEditableId(idea._id) }
+                onClick={() => setEditableId(idea.id) }
                 isEditing={isEditing}
                 >
                 <h4>{idea.title}</h4>
@@ -110,7 +110,7 @@ class IdeaTile extends Component {
                 {/* TODO. There is a flicker of the editable view when you click this delete button. Resolve. */}
                 { this.state.showDelete && (
                   <DeleteIdeaIcon
-                    onClick={() => deleteIdea(idea._id)}
+                    onClick={() => deleteIdea(idea.id)}
                     src="/img/delete.svg"
                     alt="Delete this idea"
                   />

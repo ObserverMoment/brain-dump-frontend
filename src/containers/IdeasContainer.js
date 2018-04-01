@@ -11,9 +11,11 @@ const env = runtimeEnv();
 
 // Then you can access config vars using the REACT_APP_ prefix.
 // If it doesn't exist then we are in local build so just use localhost API.
-let APIBase = env.REACT_APP_API_URL ? env.REACT_APP_API_URL + 'ideas/' : 'http://localhost:8000/ideas/';
-let allIdeas = 'all';
-let addBlankIdea = 'create';
+let APIBase = env.REACT_APP_API_URL ? env.REACT_APP_API_URL + 'test_ideas' : 'http://localhost:8000/api/v1/test_ideas';
+// NOTE: Not required for new rails API end points - get all and create new both go to root end point
+// let allIdeas = 'all';
+// let addBlankIdea = 'create';
+console.log("APIBase", APIBase)
 
 const Loading = styled.img`
   width: 100px;
@@ -80,9 +82,10 @@ class IdeasContainer extends Component {
   }
 
   fetchAllIdeas() {
-    fetch(APIBase + allIdeas).then(r => r.json())
+    // fetch(APIBase + allIdeas).then(r => r.json()) == For old express endpoint
+    fetch(APIBase).then(r => r.json())
       .then(ideas => {
-        this.setState({ ideasArray: ideas, isLoading: false });
+        this.setState({ ideasArray: ideas.data, isLoading: false });
       })
       .catch(e => console.log("Sorry, there was a problem retrieving your ideas"))
   }
@@ -143,11 +146,12 @@ class IdeasContainer extends Component {
     let blankIdea = {
       title: "Enter your title",
       body: "Enter your idea",
-      author: "Mr Default"
+      author: "Logged in user"
     }
     // Make a post request to the API to add a new empty idea to the database.
     // Once confirmed update the state to allow re-render
-    fetch(APIBase + addBlankIdea, {
+    // fetch(APIBase + addBlankIdea, {== For old express endpoint
+    fetch(APIBase, {
       method: 'post',
       headers: {
         'Accept': 'application/json, text/plain, */*',
@@ -158,7 +162,7 @@ class IdeasContainer extends Component {
       .then(newBlankIdea => {
         console.log(newBlankIdea);
         // Set state.editingID to that of the new id so that it is instantly editable.
-        this.setState({ editingId: newBlankIdea._id });
+        this.setState({ editingId: newBlankIdea.id });
         // Use the database as the single point of truth rather than trying to merge the newly updated idea into the previous state.
         this.fetchAllIdeas();
       })
@@ -168,9 +172,9 @@ class IdeasContainer extends Component {
   // Being called from IdeaTile.js.
   updateIdea(updateIdeaData) {
     // TODO. Before doing any updating just compare the current
-    // Just to make it clear that state from IdeaTile is not guaranteed to be in the corret format.
+    // Just to make it clear that state from IdeaTile is not guaranteed to be in the correct format.
     let newIdeaData = { ...updateIdeaData };
-    fetch(APIBase + newIdeaData._id, {
+    fetch(APIBase + "/" + newIdeaData.id, { // Watch out for extra / if reverting to express
       method: 'PUT', // or 'PUT'
       body: JSON.stringify(newIdeaData),
       headers: new Headers({
@@ -191,7 +195,7 @@ class IdeasContainer extends Component {
 
   // Being called from IdeaTile.js.
   deleteIdea(id) {
-    fetch(APIBase + id, {method: 'delete'})
+    fetch(APIBase + "/" + id, {method: 'delete'}) // Watch out for extra slah if reverting back to express endpoints
       .then(res => res.json())
       .then(deletedId => {
         console.log(deletedId);
